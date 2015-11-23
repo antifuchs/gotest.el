@@ -186,7 +186,7 @@ looked up in `go-testcompilation-error-regexp-alist-alist'.
 
 See also: `compilation-error-regexp-alist'."
   :type '(repeat (choice (symbol :tag "Predefined symbol")
-			 (sexp :tag "Error specification")))
+                         (sexp :tag "Error specification")))
   :group 'gotest)
 
 
@@ -428,7 +428,9 @@ For example, if the current buffer is `foo.go', the buffer for
   (interactive)
   (let* ((tests (go-test--get-current-file-tests))
          (examples (go-test--get-current-file-examples))
-         (data (s-concat tests "|" examples)))
+         (data (if (not (or (zerop (length tests)) (zerop (length examples))))
+                   (s-concat tests "|" examples)
+                 (s-concat tests examples))))
     (if (go-test--is-gb-project)
         (go-test--gb-start (s-concat "-test.v=true -test.run='" data "'"))
       (go-test--go-test (s-concat "-run='" data "'")))))
